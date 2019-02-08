@@ -12,29 +12,55 @@ class Search extends React.Component {
   };
 
   componentDidMount() {
-    console.log("Component did mount");
+  }
+  
+ handleInputChange = event => {
+        const { name, value } = event.target;
+        this.setState({
+            [name]:value
+        });
+    };
+
+  handleFormSubmit = event => {
+        event.preventDefault();
+        this.CallAPI(this.state.search);
+        console.log(this.state.result);
+        console.log("Sent to API");
+        
+    };
+
+  CallAPI = query =>{
+    API.getBook(query)
+    .then(res => this.setState({result: res.data.items}))
+    .catch(err => console.log(err));
+
+  };
+
+  showAPIonPage = () =>{
+    return(
+      <div>
+        {this.state.result.map((item)=>{
+          return(
+            <SearchResults
+            key={item.id}
+            book={item}                         
+           >
+            </SearchResults>
+          )
+        })}
+      </div>
+    )
   }
 
-
-
-  checkAxios(event){
-    event.preventDefault();
-    API.getBook().then((res)=>{
-      var dataToMap =res.data.items;
-      console.log(dataToMap);
-
-    })
-  }
-
-  showBooks = () => {
-    var mapped = dataToMap.map((data)=>{
-      return data.volumeInfo.title;
-    })
-  }
-
-
-
-
+  saveBook = (book) => {
+    axios.post("/api/books", {
+        title: book.volumeInfo.title,
+        authors: book.volumeInfo.authors,
+        description: book.volumeInfo.description,
+        image: book.volumeInfo.imageLinks.thumbnail,
+        link: book.volumeInfo.canonicalVolumeLink
+    });
+};
 
   render(){
     return (
@@ -46,13 +72,11 @@ class Search extends React.Component {
             <p className="lead">Search for any book!</p>
           </div>
         </div>
-        <SearchForm checkAxios= {this.checkAxios}/>
-        <SearchResults></SearchResults>
+        <SearchForm handleFormSubmit= {this.handleFormSubmit}
+        handleInputChange= {this.handleInputChange}/>
+        {this.showAPIonPage()}
        
-
-
-
-
+       
     </div>
     );
   }
