@@ -6,22 +6,35 @@ import API from "../utils/API";
 
 
 class Search extends React.Component {
-
   state = {
-    search: "",
-    breeds: [],
-    results: [],
-    error: ""
+    result: [],
+    search: ""
   };
 
   componentDidMount() {
-   console.log("component mounted!");
+    console.log("Component did mount");
   }
+
+
 
   checkAxios(event){
     event.preventDefault();
-    console.log("Hit");
+    API.getBook().then((res)=>{
+      var dataToMap =res.data.items;
+      console.log(dataToMap);
+
+    })
   }
+
+  showBooks = () => {
+    var mapped = dataToMap.map((data)=>{
+      return data.volumeInfo.title;
+    })
+  }
+
+
+
+
 
   render(){
     return (
@@ -33,7 +46,7 @@ class Search extends React.Component {
             <p className="lead">Search for any book!</p>
           </div>
         </div>
-        <SearchForm></SearchForm>
+        <SearchForm checkAxios= {this.checkAxios}/>
         <SearchResults></SearchResults>
        
 
